@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage
-}).single('myImage');
+}).single('');
 
 
 
@@ -21,8 +21,8 @@ const app = express();
 app.use(express.static('./public'));
 
 
-app.post('/upload', (req, res) => {
-    upload((req, res, err) => {
+app.post('/upload', function(req, res){
+    upload(req, res, function(err){
         if(err){
             res.render('index', {
                 msg: err
