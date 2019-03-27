@@ -1,11 +1,12 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const gm = require('gm');
 
 const storage = multer.diskStorage({
-    destination: './public/uploads/',
+    destination: './public/files/',
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+        cb(null, file.originalname)
     }
 });
 
@@ -20,16 +21,43 @@ app.use(express.static('./public'));
 app.post('/upload', function (req, res) {
     upload(req, res, function (err) {
         gm(req.file.path)
-            .resize(720)
-            .write('public/files/' + 'small_' + req(file.originalname.jpg), function (err) {
+            .resize(720, 720)
+            .write('./public/files/' + 'small_' + (req.file.originalname), function (err) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    //console.log(err)
+                }
             });
+        gm(req.file.path)
+            .resize(1280, 1280)
+            .write('./public/files/' + 'medium_' + (req.file.originalname), function (err) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    //console.log(err)
+                }
+            });
+        gm(req.file.path)
+            .resize(1920, 1920)
+            .write('./public/files/' + 'big_' + (req.file.originalname), function (err) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    //console.log(err)
+                }
+            });
+
         if (err) {
             res.render('index', {
                 msg: err
             });
         } else {
             console.log(req.file);
-            res.send('test');
+            res.send('upload sucsessfull');
         }
     });
 });
