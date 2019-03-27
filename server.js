@@ -1,6 +1,5 @@
 const express = require('express');
 const multer = require('multer');
-const ejs = require('ejs');
 const path = require('path');
 
 const storage = multer.diskStorage({
@@ -17,9 +16,6 @@ const upload = multer({
 
 // Init app
 const app = express();
-
-// EJS
-app.set('view engine', 'ejs');
 
 // Public Folder
 app.use(express.static('./public'));
@@ -44,7 +40,7 @@ app.get('/', function(req, res) {
     
 const port = 3000;
 
-app.listen(port, () => console.log(`server started on port ${port}`));
+app.listen(port, () => console.log('server started on port ${port}'));
 
 
 
