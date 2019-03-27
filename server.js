@@ -14,15 +14,15 @@ const upload = multer({
 }).single('myImage');
 
 
-// Init app
+
 const app = express();
 
-// Public Folder
+
 app.use(express.static('./public'));
 
 
 app.post('/upload', (req, res) => {
-    upload(req, res, (err) => {
+    upload((req, res, err) => {
         if(err){
             res.render('index', {
                 msg: err
@@ -40,7 +40,7 @@ app.get('/', function(req, res) {
     
 const port = 3000;
 
-app.listen(port, () => console.log('server started on port ${port}'));
+app.listen(process.env.PORT || port, () => console.log('server started on port ${port}'));
 
 
 
