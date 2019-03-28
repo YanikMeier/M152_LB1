@@ -18,7 +18,7 @@ const app = express();
 
 app.use(express.static('./public'));
 
-app.post('/upload', function (req, res) {
+app.post('/api/file', function (req, res) {
     upload(req, res, function (err) {
         gm(req.file.path)
             .resize(720, 720)
