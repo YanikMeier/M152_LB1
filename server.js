@@ -3,10 +3,11 @@ const multer = require('multer');
 const path = require('path');
 const gm = require('gm');
 const ejs = require('ejs');
+const fs = require('fs');
 
 
 const storage = multer.diskStorage({
-    destination: './public/file/',
+    destination: './file/',
     filename: function (req, file, cb) {
         cb(null, file.originalname)
     }
@@ -32,44 +33,45 @@ function updateImages() {
 app.set('view engine', 'ejs');
 
 
-app.use(express.static('./public'));
+app.use('/file', express.static(path.join(__dirname, 'file')));
 
 
 app.post('/api/file', function (req, res) {
     upload(req, res, function (err) {
         gm(req.file.path)
             .resize(720, null)
-            .write('./public/file/' + 'small_' + (req.file.originalname), function (err) {
+            .write('./file/' + 'small_' + (req.file.originalname), function (err) {
                 if (err) console.log(err);
                 else console.log('Done with small!');
 
             });
         gm(req.file.path)
             .resize(1280, null)
-            .write('./public/file/' + 'medium_' + (req.file.originalname), function (err) {
+            .write('./file/' + 'medium_' + (req.file.originalname), function (err) {
                 if (err) console.log(err);
                 else console.log('Done with medium!');
 
             });
         gm(req.file.path)
             .resize(1920, null)
-            .write('./public/file/' + 'big_' + (req.file.originalname), function (err) {
+            .write('./file/' + 'big_' + (req.file.originalname), function (err) {
                 if (err) console.log(err);
                 else console.log('Done with big!');
 
             });
         if (err) {
-            res.render('index', {
+            res.render('image_gallery', {
                 msg: err,
 
 
             });
         }
         else {
-            res.render('index', {
+            res.render('image_gallery', {
                 file: `/api/file${req.file.filename}`,
                 images: updateImages()
             })
+
         }
     });
 });
@@ -82,21 +84,21 @@ app.post('/api/files', function (req, res) {
         for (var i = 0; i < req.files.length; i++) {
             gm(req.files[i].path)
                 .resize(720, null)
-                .write('./public/file/' + 'small_' + (req.files[i].originalname), function (err) {
+                .write('./file/' + 'small_' + (req.files[i].originalname), function (err) {
                     if (err) console.log(err);
                     else console.log('Done with small!');
 
                 });
             gm(req.files[i].path)
                 .resize(1280, null)
-                .write('./public/file/' + 'medium_' + (req.files[i].originalname), function (err) {
+                .write('./file/' + 'medium_' + (req.files[i].originalname), function (err) {
                     if (err) console.log(err);
                     else console.log('Done with medium!');
 
                 });
             gm(req.files[i].path)
                 .resize(1920, null)
-                .write('./public/file/' + 'big_' + (req.files[i].originalname), function (err) {
+                .write('./file/' + 'big_' + (req.files[i].originalname), function (err) {
                     if (err) console.log(err);
                     else console.log('Done with big!');
 
@@ -108,7 +110,9 @@ app.post('/api/files', function (req, res) {
 });
 
 app.get('/', (req, res) => {
-    res.render('index');
+    res.render('image_gallery', {
+        images: updateImages()
+    })
 });
 
 const port = 4000;
@@ -118,7 +122,7 @@ app.listen(process.env.PORT || port, () => console.log('server started on port $
 
 app.get('/gallery/image', function (req, res) {
     res.render('gallery_image', {
-        original: fs.readdirSync(dirname + '/public/file/'),
+        original: fs.readdirSync(dirname + '/file/'),
 
     })
 });

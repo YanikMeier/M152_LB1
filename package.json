@@ -6,6 +6,7 @@
   "dependencies": {
     "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "fs": "0.0.1-security",
     "gm": "^1.23.1",
     "gulp": "^4.0.0",
     "gulp-imagemin": "^5.0.3",
