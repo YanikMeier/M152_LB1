@@ -2,68 +2,113 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const gm = require('gm');
+const ejs = require('ejs');
+
 
 const storage = multer.diskStorage({
-    destination: './public/files/',
+    destination: './public/file/',
     filename: function (req, file, cb) {
         cb(null, file.originalname)
     }
 });
 
+
 const upload = multer({
     storage: storage
-}).single('');
+}).single('file');
+
+const uploadm = multer({
+    storage: storage
+}).array('files', 20);
 
 const app = express();
 
+function updateImages() {
+
+    return fs.readdirSync('./file');
+}
+
+
+app.set('view engine', 'ejs');
+
+
 app.use(express.static('./public'));
 
-app.post('/upload', function (req, res) {
+
+app.post('/api/file', function (req, res) {
     upload(req, res, function (err) {
         gm(req.file.path)
-            .resize(720, 720)
-            .write('./public/files/' + 'small_' + (req.file.originalname), function (err) {
-                if (err) {
-                    console.log(err)
-                }
-                else {
-                    //console.log(err)
-                }
-            });
-        gm(req.file.path)
-            .resize(1280, 1280)
-            .write('./public/files/' + 'medium_' + (req.file.originalname), function (err) {
-                if (err) {
-                    console.log(err)
-                }
-                else {
-                    //console.log(err)
-                }
-            });
-        gm(req.file.path)
-            .resize(1920, 1920)
-            .write('./public/files/' + 'big_' + (req.file.originalname), function (err) {
-                if (err) {
-                    console.log(err)
-                }
-                else {
-                    //console.log(err)
-                }
-            });
+            .resize(720, null)
+            .write('./public/file/' + 'small_' + (req.file.originalname), function (err) {
+                if (err) console.log(err);
+                else console.log('Done with small!');
 
+            });
+        gm(req.file.path)
+            .resize(1280, null)
+            .write('./public/file/' + 'medium_' + (req.file.originalname), function (err) {
+                if (err) console.log(err);
+                else console.log('Done with medium!');
+
+            });
+        gm(req.file.path)
+            .resize(1920, null)
+            .write('./public/file/' + 'big_' + (req.file.originalname), function (err) {
+                if (err) console.log(err);
+                else console.log('Done with big!');
+
+            });
         if (err) {
             res.render('index', {
-                msg: err
+                msg: err,
+
+
             });
-        } else {
-            console.log(req.file);
-            res.send('upload sucsessfull');
+        }
+        else {
+            res.render('index', {
+                file: `/api/file${req.file.filename}`,
+                images: updateImages()
+            })
         }
     });
 });
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'index.html'));
+
+app.post('/api/files', function (req, res) {
+
+    uploadm(req, res, function (err) {
+        console.log(req.files);
+        for (var i = 0; i < req.files.length; i++) {
+            gm(req.files[i].path)
+                .resize(720, null)
+                .write('./public/file/' + 'small_' + (req.files[i].originalname), function (err) {
+                    if (err) console.log(err);
+                    else console.log('Done with small!');
+
+                });
+            gm(req.files[i].path)
+                .resize(1280, null)
+                .write('./public/file/' + 'medium_' + (req.files[i].originalname), function (err) {
+                    if (err) console.log(err);
+                    else console.log('Done with medium!');
+
+                });
+            gm(req.files[i].path)
+                .resize(1920, null)
+                .write('./public/file/' + 'big_' + (req.files[i].originalname), function (err) {
+                    if (err) console.log(err);
+                    else console.log('Done with big!');
+
+                });
+        }
+    });
+
+
+});
+
+app.get('/', (req, res) => {
+    res.render('index');
 });
 
 const port = 4000;
@@ -71,4 +116,9 @@ const port = 4000;
 app.listen(process.env.PORT || port, () => console.log('server started on port ${port}'));
 
 
+app.get('/gallery/image', function (req, res) {
+    res.render('gallery_image', {
+        original: fs.readdirSync(dirname + '/public/file/'),
 
+    })
+});
