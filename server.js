@@ -34,7 +34,10 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('./public'));
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f0bde1ac5cd9ba6aed75417cc550be4753aa1c44
 app.post('/api/file', function (req, res) {
     upload(req, res, function (err) {
         gm(req.file.path)
