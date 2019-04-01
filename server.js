@@ -7,6 +7,10 @@ const fs = require('fs');
 const fluent_ffmpeg = require('fluent-ffmpeg');
 
 
+
+
+
+
 const storage = multer.diskStorage({
     destination: './file/',
     filename: function (req, file, cb) {
@@ -122,10 +126,25 @@ app.post('/api/files', function (req, res) {
 
 app.post('/api/videos', function (req, res) {
     uploadVideos(req, res, function (err) {
-        console.log("done");
+        const name = req.body.video + '.mp4';
+        var mergedVideo = fluent_ffmpeg();
+        var videoNames = req.files;
+
         {
+            videoNames.forEach(function(videoName){
+                mergedVideo = mergedVideo.addInput(videoName.path)
+            });
+
+            mergedVideo.mergeToFile('./video/' + name)
+                .on('error', function (err) {
+                    console.log('Error ' + err.message);
+                })
+                .on('end', function(){
+                    console.log('Finished!');
+                });
 
         }
+        res.status(200).send("done")
     });
 
 
@@ -143,17 +162,17 @@ app.listen(process.env.PORT || port, () => console.log('server started on port $
 
 
 app.get('/gallery/image', function (req, res) {
-    res.render('gallery_image', {
-        original: fs.readdirSync(dirname + '/file/'),
-
-    })
+    res.render('image_gallery')
 });
+
 app.get('/video_manager', function (req, res) {
     res.render('video_manager')
+});
+
+app.get('/images', function (req, res) {
+    res.render('gallery', {
+        original: fs.readdirSync(+'/file/'),
+    })
 
 });
 
-app.get('/gallery', function (req, res) {
-    res.render('gallery')
-
-});
