@@ -14,7 +14,6 @@
             height: 100vh;
             width: 50%;
             position: fixed;
-            z-index: 1;
             top: 5%;
             overflow-x: hidden;
             padding-top: 20px;
@@ -60,7 +59,10 @@
                 <a class="nav-link" href="#">Upload <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Galarie</a>
+                <a class="nav-link" href="gallery">Bildergalerie</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="video_manager">Videogalerie</a>
             </li>
         </ul>
     </div>
@@ -96,12 +98,7 @@
 </form>
 
 
-
 <br>
-<% images.forEach(function(image) { %>
-<a href="../file/<%=image %>" target="_blank"><img src="../file/<%= image %>"
-                                                    style="width: 24.6vw; height: 500px;" alt="Reload the page! Building failed" /></a>
-<% }); %>
--->
+
 </body>
 </html>

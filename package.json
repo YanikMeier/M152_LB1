@@ -6,6 +6,7 @@
   "dependencies": {
     "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "gm": "^1.23.1",
     "gulp": "^4.0.0",

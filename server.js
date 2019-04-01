@@ -4,12 +4,20 @@ const path = require('path');
 const gm = require('gm');
 const ejs = require('ejs');
 const fs = require('fs');
+const fluent_ffmpeg = require('fluent-ffmpeg');
 
 
 const storage = multer.diskStorage({
     destination: './file/',
     filename: function (req, file, cb) {
         cb(null, file.originalname)
+    }
+});
+
+const storageVideos = multer.diskStorage({
+    destination: './video/',
+    filename: function (req, video, cb) {
+        cb(null, video.originalname)
     }
 });
 
@@ -21,6 +29,11 @@ const upload = multer({
 const uploadm = multer({
     storage: storage
 }).array('files', 20);
+
+
+const uploadVideos = multer({
+    storage: storageVideos
+}).array('video', 20);
 
 const app = express();
 
@@ -105,6 +118,15 @@ app.post('/api/files', function (req, res) {
                 });
         }
     });
+});
+
+app.post('/api/videos', function (req, res) {
+    uploadVideos(req, res, function (err) {
+        console.log("done");
+        {
+
+        }
+    });
 
 
 });
@@ -125,4 +147,13 @@ app.get('/gallery/image', function (req, res) {
         original: fs.readdirSync(dirname + '/file/'),
 
     })
+});
+app.get('/video_manager', function (req, res) {
+    res.render('video_manager')
+
+});
+
+app.get('/gallery', function (req, res) {
+    res.render('gallery')
+
 });
