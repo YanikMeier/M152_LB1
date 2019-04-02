@@ -7,10 +7,6 @@ const fs = require('fs');
 const fluent_ffmpeg = require('fluent-ffmpeg');
 
 
-
-
-
-
 const storage = multer.diskStorage({
     destination: './file/',
     filename: function (req, file, cb) {
@@ -34,25 +30,23 @@ const uploadm = multer({
     storage: storage
 }).array('files', 20);
 
-
 const uploadVideos = multer({
     storage: storageVideos
 }).array('video', 20);
 
 const app = express();
 
+
 function updateImages() {
 
     return fs.readdirSync('./file');
 }
 
-
 app.set('view engine', 'ejs');
-
 
 app.use('/file', express.static(path.join(__dirname, 'file')));
 
-
+//POST Single File
 app.post('/api/file', function (req, res) {
     upload(req, res, function (err) {
         gm(req.file.path)
@@ -93,7 +87,7 @@ app.post('/api/file', function (req, res) {
     });
 });
 
-
+//POST Multiple Files
 app.post('/api/files', function (req, res) {
 
     uploadm(req, res, function (err) {
@@ -124,27 +118,32 @@ app.post('/api/files', function (req, res) {
     });
 });
 
+//POST Video
 app.post('/api/videos', function (req, res) {
     uploadVideos(req, res, function (err) {
         const name = req.body.video + '.mp4';
         var mergedVideo = fluent_ffmpeg();
         var videoNames = req.files;
 
-        {
-            videoNames.forEach(function(videoName){
-                mergedVideo = mergedVideo.addInput(videoName.path)
-            });
+        videoNames.forEach(function (videoName) {
+            mergedVideo = mergedVideo.addInput(videoName.path)
+        });
 
-            mergedVideo.mergeToFile('./video/' + name)
-                .on('error', function (err) {
-                    console.log('Error ' + err.message);
-                })
-                .on('end', function(){
-                    console.log('Finished!');
+        mergedVideo.mergeToFile('./video/merged/' + name)
+            .on('error', function (err) {
+                console.log('Error ' + err.message);
+            })
+            .on('end', function () {
+                res.render('play_vid', {
+                    video: fs.readdirSync(__dirname + '/video/merged').filter(function (file) {
+                        return file === fileName;
+                    })
                 });
+                console.log('Finished!');
+            });
+        res.status(200).send("okidoki");
 
-        }
-        res.status(200).send("done")
+
     });
 
 
@@ -169,10 +168,23 @@ app.get('/video_manager', function (req, res) {
     res.render('video_manager')
 });
 
+app.get('/play_vid', function (req, res) {
+    res.render('video_manager')
+});
+
 app.get('/images', function (req, res) {
     res.render('gallery', {
         original: fs.readdirSync(+'/file/'),
     })
+});
 
+app.get('play_video', function (req, res) {
+    console.log(req.query.videoName);
+    var fileName = req.query.videoName;
+    res.render('play_video', {
+        video: fs.readdirSync(__dirname + '/video/merged').filter(function (file) {
+            return file === fileName;
+        })
+    });
 });
 

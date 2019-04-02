@@ -31,20 +31,10 @@
     </div>
 </nav>
 
-<form class="md-form" action="/api/videos" method="POST" enctype="multipart/form-data">
-    <div>
-        <h3>Video Hochladen</h3>
-        <input name="video" placeholder="Rename File">
-        <div class="btn btn-primary btn-sm float-left">
-            <span>Choose video</span>
-            <input name="video" type="file" multiple>
-        </div>
-        <div class="file-path-wrapper">
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </div>
-</form>
-
-
+<div class="buttons">
+    <button onclick="">Play</button>
+    <button onclick="">Pause</button>
+</div>
+<video src="/video/merged/<%= video %>" autoplay></video>
 </body>
 </html>
