@@ -45,6 +45,7 @@ function updateImages() {
 app.set('view engine', 'ejs');
 
 app.use('/file', express.static(path.join(__dirname, 'file')));
+app.use('/video/merged/', express.static(path.join(__dirname, '/video/merged/')));
 
 //POST Single File
 app.post('/api/file', function (req, res) {
@@ -61,7 +62,6 @@ app.post('/api/file', function (req, res) {
             .write('./file/' + 'medium_' + (req.file.originalname), function (err) {
                 if (err) console.log(err);
                 else console.log('Done with medium!');
-
             });
         gm(req.file.path)
             .resize(1920, null)
@@ -73,8 +73,6 @@ app.post('/api/file', function (req, res) {
         if (err) {
             res.render('image_gallery', {
                 msg: err,
-
-
             });
         }
         else {
@@ -134,7 +132,9 @@ app.post('/api/videos', function (req, res) {
                 console.log('Error ' + err.message);
             })
             .on('end', function () {
+                var fileName = req.query.videoName;
                 res.render('play_vid', {
+
                     video: fs.readdirSync(__dirname + '/video/merged').filter(function (file) {
                         return file === fileName;
                     })
@@ -178,7 +178,7 @@ app.get('/images', function (req, res) {
     })
 });
 
-app.get('play_video', function (req, res) {
+app.get('/play_video', function (req, res) {
     console.log(req.query.videoName);
     var fileName = req.query.videoName;
     res.render('play_video', {
@@ -187,4 +187,6 @@ app.get('play_video', function (req, res) {
         })
     });
 });
+
+
 

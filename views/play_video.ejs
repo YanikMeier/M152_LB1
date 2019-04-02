@@ -8,7 +8,29 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Material Design Bootstrap -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.5/css/mdb.min.css" rel="stylesheet">
+    <style>
+        .center {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        .text-center{
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 25%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 25px;
+
+        }
+
+
+
+    </style>
 <body>
+
 <nav class="navbar navbar-expand-lg navbar-dark primary-color">
     <a class="navbar-brand" href="#">Simple Upload</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -17,24 +39,76 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="/gallery/image">Upload <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/images">Bildergalerie</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/video_manager">Videogalerie</a>
-            </li>
-        </ul>
+
     </div>
 </nav>
 
-<div class="buttons">
-    <button onclick="">Play</button>
-    <button onclick="">Pause</button>
+<video class="text-center" id="vid" width="45%" height="45%">
+    <source src="../video/merged/<%= video %>" type="video/mp4">
+</video>
+<br>
+<br>
+
+<div class="center">
+    <button class="btn btn-primary" onclick="playVid()" type="button"><i class="fas fa-play"></i></button>
+    <button class="btn btn-primary" onclick="pauseVid()" type="button"><i class="fas fa-pause-circle"></i></button>
+    <button class="btn btn-primary" onclick="mute()" type="button"><i class="fas fa-volume-mute"></i></button>
+    <button class="btn btn-primary" onclick="unmute()" type="button"><i class="fas fa-volume-up"></i></button>
+    <button class="btn btn-primary" onclick="normalSpeed()" type="button">1x</button>
+    <button class="btn btn-primary" onclick="speed1()" type="button">1.5x</button>
+    <button class="btn btn-primary" onclick="speed2()" type="button">2x</button>
+    <button class="btn btn-primary" onclick="fullscreen()" type="button"><i class="fas fa-expand"></i></button>
 </div>
-<video src="/video/merged/<%= video %>" autoplay></video>
+
+
+<script>
+    var video = document.getElementById("vid");
+
+    function playVid() {
+        video.play();
+    }
+
+    function pauseVid() {
+        video.pause();
+    }
+
+    function fullscreen() {
+        video.width = 1920;
+    }
+
+    function fullscreen() {
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.mozRequestFullScreen) {
+            video.mozRequestFullScreen();
+        } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) {
+            video.msRequestFullscreen();
+        }
+    }
+
+    function speed2() {
+        video.playbackRate = 2;
+    }
+
+    function speed1() {
+        video.playbackRate = 1.5;
+    }
+
+    function normalSpeed() {
+        video.playbackRate = 1;
+    }
+
+    function unmute() {
+        video.muted = false;
+    }
+
+    function mute() {
+        video.muted = true;
+    }
+
+</script>
+
 </body>
 </html>
