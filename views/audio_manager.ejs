@@ -34,16 +34,32 @@
     </div>
 </nav>
 
-<form class="md-form" action="/api/videos" method="POST" enctype="multipart/form-data">
+<form class="md-form" action="/api/audio" method="POST" enctype="multipart/form-data">
     <div>
-        <h3>Video Hochladen</h3>
-        <input name="video" placeholder="Rename File">
+        <h3>Audio-Datei hochladen</h3>
         <div class="btn btn-primary btn-sm float-left">
-            <span>Choose video</span>
-            <input name="video" type="file" multiple>
-        <button type="submit" class="btn btn-primary">Upload</button>
+            <span>Choose audio</span>
+            <input name="audio" type="file">
         </div>
+        <div class="file-path-wrapper">
+        </div>
+        <br>
+        <br>
+        <br>
+        <h3>VTTT-Datei hochladen</h3>
+
+        <div class="btn btn-primary btn-sm float-left">
+            <span>Choose vtt</span>
+            <input name="vtt" type="file">
+        </div>
+        <div class="file-path-wrapper">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload files</button>
     </div>
 </form>
+
+<h3 style="color:red;"><%= typeof msg != 'undefined' ? msg : '' %></h3>
+
+
 </body>
 </html>

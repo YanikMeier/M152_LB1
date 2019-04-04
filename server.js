@@ -6,6 +6,7 @@ const ejs = require('ejs');
 const fs = require('fs');
 const fluent_ffmpeg = require('fluent-ffmpeg');
 
+const port = 4000;
 
 const storage = multer.diskStorage({
     destination: './file/',
@@ -21,18 +22,40 @@ const storageVideos = multer.diskStorage({
     }
 });
 
+var nameOfAudio = '';
+
+const storageAudio = multer.diskStorage({
+    destination: './audio/',
+    filename: function (req, file, cb) {
+        let filetype = file.fieldname;
+        if(filetype === 'audio') {
+            nameOfAudio = file.originalname.split('.').slice(0, -1).join('.');
+            console.log(nameOfAudio);
+            cb(null, file.originalname);
+        }
+        else if(filetype === 'vtt'){
+            file.originalname = nameOfAudio + '.vtt';
+            cb(null, file.originalname);
+        }
+    }
+});
 
 const upload = multer({
     storage: storage
 }).single('file');
 
-const uploadm = multer({
+const uploadM = multer({
     storage: storage
 }).array('files', 20);
 
 const uploadVideos = multer({
     storage: storageVideos
 }).array('video', 20);
+
+
+const uploadAudio = multer({
+    storage: storageAudio
+}).any();
 
 const app = express();
 
@@ -45,6 +68,7 @@ function updateImages() {
 app.set('view engine', 'ejs');
 
 app.use('/file', express.static(path.join(__dirname, 'file')));
+app.use('/audio', express.static(path.join(__dirname, 'audio')));
 app.use('/video/merged/', express.static(path.join(__dirname, '/video/merged/')));
 
 //POST Single File
@@ -88,7 +112,7 @@ app.post('/api/file', function (req, res) {
 //POST Multiple Files
 app.post('/api/files', function (req, res) {
 
-    uploadm(req, res, function (err) {
+    uploadM(req, res, function (err) {
         console.log(req.files);
         for (var i = 0; i < req.files.length; i++) {
             gm(req.files[i].path)
@@ -119,45 +143,66 @@ app.post('/api/files', function (req, res) {
 //POST Video
 app.post('/api/videos', function (req, res) {
     uploadVideos(req, res, function (err) {
-        const name = req.body.video + '.mp4';
-        var mergedVideo = fluent_ffmpeg();
-        var videoNames = req.files;
-
-        videoNames.forEach(function (videoName) {
-            mergedVideo = mergedVideo.addInput(videoName.path)
-        });
-
-        mergedVideo.mergeToFile('./video/merged/' + name)
-            .on('error', function (err) {
-                console.log('Error ' + err.message);
-            })
-            .on('end', function () {
-                var fileName = req.query.videoName;
-                res.render('play_vid', {
-
-                    video: fs.readdirSync(__dirname + '/video/merged').filter(function (file) {
-                        return file === fileName;
-                    })
-                });
-                console.log('Finished!');
+        if (err) {
+            res.render('video_manager', {
+                msg: err,
             });
-        res.status(200).send("okidoki");
+        }
+        else {
+            const name = req.body.video + '.mp4';
+            var mergedVideo = fluent_ffmpeg();
+            var videoNames = req.files;
+            videoNames.forEach(function (videoName) {
+                mergedVideo = mergedVideo.addInput(videoName.path)
+            });
 
+            mergedVideo.mergeToFile('./video/merged/' + name)
+                .on('error', function (err) {
+                    console.log('Error ' + err.message);
+                })
+                .on('end', function () {
+                    console.log('Finished!');
+                });
 
+            var fileName = req.query.videoName;
+            res.render('play_video', {
+
+                video: fs.readdirSync(__dirname + '/video/merged').filter(function (file) {
+                    return file === fileName;
+                })
+            });
+        }
     });
 
 
 });
+
+//Post Audio
+app.post('/api/audio', function (req, res) {
+    uploadAudio(req, res, function (err) {
+        if (err) {
+            res.render('audio_manager', {
+                msg: err,
+            });
+        }
+        else {
+            res.status(200).send("okidoki");
+            console.log(req.files);
+        }
+    });
+});
+
+
+//Post VTT
+
+
+app.listen(process.env.PORT || port, () => console.log('server started on port ${port}'));
 
 app.get('/', (req, res) => {
     res.render('image_gallery', {
         images: updateImages()
     })
 });
-
-const port = 4000;
-
-app.listen(process.env.PORT || port, () => console.log('server started on port ${port}'));
 
 
 app.get('/gallery/image', function (req, res) {
@@ -178,6 +223,10 @@ app.get('/images', function (req, res) {
     })
 });
 
+app.get('/audio_manager', function (req, res) {
+    res.render('audio_manager')
+});
+
 app.get('/play_video', function (req, res) {
     console.log(req.query.videoName);
     var fileName = req.query.videoName;
@@ -187,6 +236,19 @@ app.get('/play_video', function (req, res) {
         })
     });
 });
+
+
+
+app.get('/audio-player', function (req, res) {
+    console.log(req.query.audioName);
+    var fileName = req.query.audioName.split('.').slice(0, -1).join('.');
+    res.render('audio-player', {
+        audio: fileName
+    });
+});
+
+
+
 
 
 
