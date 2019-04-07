@@ -57,10 +57,8 @@
 <form class="center">
     <h2>Simple Chat</h2>
     <div id="froala-editor">
-
         <div class="md-form">
             <input type="text" id="username" class="form-control" placeholder="Benutzername">
-
         </div>
         <textarea id="content" name="content" style="width: 50vw; height: 50vh;"></textarea>
         <br>
@@ -74,7 +72,7 @@
 
 
 <script>
-    let exampleSocket = new WebSocket("ws://https://modul-152-yanik.herokuapp.com/");
+    let exampleSocket = new WebSocket("wss://https://modul-152-yanik.herokuapp.com/");
     document.querySelector("#submit").addEventListener('click', () => {
         let user = document.getElementById('username').value;
         let text = document.getElementById('content').value;
