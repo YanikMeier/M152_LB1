@@ -1,7 +1,6 @@
 {
   "name": "project",
   "version": "1.0.0",
-  "description": "",
   "main": "gulpfile.js",
   "dependencies": {
     "ejs": "^2.6.1",
@@ -11,9 +10,17 @@
     "gm": "^1.23.1",
     "gulp": "^4.0.0",
     "gulp-imagemin": "^5.0.3",
-    "multer": "^1.4.1"
+    "http": "0.0.0",
+    "http-server": "^0.11.1",
+    "multer": "^1.4.1",
+    "websocket": "^1.0.28",
+    "ws": "^6.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/express": "^4.16.1",
+    "@types/ws": "^6.0.1",
+    "typescript": "^3.4.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -27,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/YanikMeier/M152_LB1/issues"
   },
-  "homepage": "https://github.com/YanikMeier/M152_LB1#readme"
+  "homepage": "https://github.com/YanikMeier/M152_LB1#readme",
+  "description": ""
 }
+
+

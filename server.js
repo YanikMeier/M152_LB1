@@ -1,4 +1,6 @@
 const express = require('express');
+const http = require('http');
+const WebSocket = require('ws');
 const multer = require('multer');
 const path = require('path');
 const gm = require('gm');
@@ -7,6 +9,35 @@ const fs = require('fs');
 const fluent_ffmpeg = require('fluent-ffmpeg');
 
 const port = 4000;
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+wss.on('connection', (ws) => {
+        wss.clients
+            .forEach(function (client) {
+                client.send(JSON.stringify({
+                    user: "server",
+                    text: 'Neuer User ist dem Chat beigetretten!',
+                    date: new Date().toLocaleTimeString()
+                }));
+            });
+        ws.on('message', (data) => {
+            wss.clients
+                .forEach(function (client) {
+                    if (client !== ws) {
+                        client.send("" + data);
+                    }
+                    else {
+                        ws.send("" + data);
+                    }
+                });
+        });
+
+//start our server
+server.listen(process.env.PORT || 8999, () => {
+    console.log(`Server started on port ${server.address().port} :)`);
+});
 
 const storage = multer.diskStorage({
     destination: './file/',
@@ -57,7 +88,6 @@ const uploadAudio = multer({
     storage: storageAudio
 }).any();
 
-const app = express();
 
 
 function updateImages() {
@@ -174,7 +204,6 @@ app.post('/api/videos', function (req, res) {
         }
     });
 
-
 });
 
 //Post Audio
@@ -209,6 +238,10 @@ app.get('/gallery/image', function (req, res) {
     res.render('image_gallery')
 });
 
+app.get('/webchat', function (req, res) {
+    res.render('webchat')
+});
+
 app.get('/video_manager', function (req, res) {
     res.render('video_manager')
 });
@@ -238,14 +271,17 @@ app.get('/play_video', function (req, res) {
 });
 
 
-
 app.get('/audio-player', function (req, res) {
     console.log(req.query.audioName);
     var fileName = req.query.audioName.split('.').slice(0, -1).join('.');
     res.render('audio-player', {
         audio: fileName
     });
+})
 });
+
+
+
 
 
 
