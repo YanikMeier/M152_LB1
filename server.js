@@ -8,11 +8,15 @@ const ejs = require('ejs');
 const fs = require('fs');
 const fluent_ffmpeg = require('fluent-ffmpeg');
 
-const port = 4000;
+//const port = 4000;
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+server.listen(process.env.PORT || 8999, () => {
+    console.log(`Server started on port ${server.address().port} :)`);
+});
+
 wss.on('connection', (ws) => {
         wss.clients
             .forEach(function (client) {
@@ -35,9 +39,7 @@ wss.on('connection', (ws) => {
         });
 
 //start our server
-server.listen(process.env.PORT || 8999, () => {
-    console.log(`Server started on port ${server.address().port} :)`);
-});
+
 
 const storage = multer.diskStorage({
     destination: './file/',
@@ -225,7 +227,7 @@ app.post('/api/audio', function (req, res) {
 //Post VTT
 
 
-app.listen(process.env.PORT || port, () => console.log('server started on port ${port}'));
+//app.listen(process.env.PORT || port, () => console.log('server started on port ${port}'));
 
 app.get('/', (req, res) => {
     res.render('image_gallery', {
