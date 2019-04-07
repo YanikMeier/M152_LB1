@@ -20,11 +20,9 @@
           type="text/css"/>
     <style>
         .center {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            margin-top: 100px;
+            margin-left: 10vw;
+            margin-right: 10vw;
+
         }
     </style>
 </head>
@@ -56,26 +54,30 @@
         </ul>
     </div>
 </nav>
-<form name="formName" class="center" onsubmit="return check()">
+<form class="center">
     <h2>Simple Chat</h2>
     <div id="froala-editor">
-        <input id="username" name="benutzername" type="text" placeholder="Benutzername">
+
+        <div class="md-form">
+            <input type="text" id="username" class="form-control" placeholder="Benutzername">
+
+        </div>
+        <textarea id="content" name="content" style="width: 50vw; height: 50vh;"></textarea>
         <br>
-        <textarea id="textarea" name="content" style="width: 50vw; height: 50vh;"></textarea>
-        <br>
-        <button class="btn btn-primary">Senden</button>
+        <button class="btn btn-primary" id="submit">Senden</button>
     </div>
+    <div class="received-messages"></div>
 </form>
 
-<div class="received-messages">
-</div>
+
+
 
 
 <script>
-    let exampleSocket = new WebSocket("ws://modul-152-yanik.herokuapp.com/");
+    let exampleSocket = new WebSocket("ws://https://modul-152-yanik.herokuapp.com/");
     document.querySelector("#submit").addEventListener('click', () => {
-        let user = document.getElementById('userName').value;
-        let text = document.getElementById('message').value;
+        let user = document.getElementById('username').value;
+        let text = document.getElementById('content').value;
         if (user === ''){
             alert('Bitte geben Sie einen Benutzername ein')
         } else if (text === ''){
@@ -83,9 +85,8 @@
         }
         else {
             let myData = {
-                user: document.getElementById('user').value,
-                text: document.getElementById('text').value,
-
+                user: user,
+                text: text
             };
             exampleSocket.send(JSON.stringify(myData));
             $('#content').froalaEditor('html.set', '');
@@ -94,7 +95,7 @@
     });
     exampleSocket.onmessage = event => {
         let form = JSON.parse(event.data)
-        document.querySelector(".received-messages").innerHTML = `${document.querySelector(".received-messages").innerHTML} <hr class="col-10"><h5><b>${form.user}: </b></h5><p>${form.text}</p><h6>${form.date}</h6>`;
+        document.querySelector(".received-messages").innerHTML = `${document.querySelector(".received-messages").innerHTML} <hr class="col-10"><h5><b>${form.user}: </b></h5><p>${form.text}</p>`;
     }
 
 </script>

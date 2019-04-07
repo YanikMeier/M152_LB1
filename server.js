@@ -8,37 +8,48 @@ const ejs = require('ejs');
 const fs = require('fs');
 const fluent_ffmpeg = require('fluent-ffmpeg');
 
-//const port = 4000;
+const port = 4000;
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-server.listen(process.env.PORT || 8999, () => {
-    console.log(`Server started on port ${server.address().port} :)`);
-});
 
 wss.on('connection', (ws) => {
-        wss.clients
-            .forEach(function (client) {
-                client.send(JSON.stringify({
-                    user: "server",
-                    text: 'Neuer User ist dem Chat beigetretten!',
-                    date: new Date().toLocaleTimeString()
-                }));
-            });
-        ws.on('message', (data) => {
+    wss.clients
+        .forEach(function (client) {
+            client.send(JSON.stringify({
+                user: "server",
+                text: 'Neuer User ist dem Chat beigetretten!',
+
+            }));
+        });
+
+        //connection is up, let's add a simple simple event
+        ws.on('message', function (message) {
+            //log the received message and send it back to the client
+            console.log('received: %s', message);
             wss.clients
                 .forEach(function (client) {
-                    if (client !== ws) {
-                        client.send("" + data);
+                    if (client != ws) {
+                        client.send(message);
                     }
                     else {
-                        ws.send("" + data);
+                        ws.send(message);
                     }
                 });
         });
+    });
+
+
 
 //start our server
+    server.listen(process.env.PORT || 80, () => {
+        console.log(`Server started on port ${server.address().port} :)`);
+    });
+
+
+
+
 
 
 const storage = multer.diskStorage({
@@ -206,6 +217,7 @@ app.post('/api/videos', function (req, res) {
         }
     });
 
+
 });
 
 //Post Audio
@@ -280,8 +292,6 @@ app.get('/audio-player', function (req, res) {
         audio: fileName
     });
 })
-});
-
 
 
 
